@@ -40,7 +40,6 @@ class UI {
       <td>${book.title}</td>
       <td>${book.author}</td>
       <td>${book.isbn}</td>
-      <td>${book.title}</td>
       <td><a href="#" class="delete-btn">X</a></td>
     `;
 
@@ -67,7 +66,7 @@ class UI {
     
     // Vanish in 3 sec
     ////setTimeout(() => document.querySelector('.alert-danger').remove(), 3000);
-    setTimeout(() => document.querySelector('.alert-success').remove(), 3000);
+    setTimeout(() => document.querySelector('.alert-success').remove(), 1000);
 
     return 'static method has been called.'; 
   }
@@ -79,13 +78,12 @@ class UI {
   }
 
 } //console.log(UI.showAlert());
-console.log(deleteBook(el));
+// console.log(deleteBook());
 
 // Store Class: Handles Storage
 
-//We need 3 differant methods and we make them static so we can call them directly
+////We need 3 differant methods and we make them static so we can call them directly
 class Store {
-
   static getBooks() {
     let books;
     if(localStorage.getItem('books') === null){
@@ -155,12 +153,9 @@ document.querySelector('#book-list').addEventListener('click', (e) => {
   // Remove Book from UI
   UI.deleteBook(e.target);
 
-  // when i refrash the page i want the book to not be there
-  // The remove book takes in the isbn.
-  // So we get the link it self that we click. then we navgatte to the parent element which is the <td></td>. then we 
-  // want to go inside of the and grap the previousElementSibling. then we want the text content. this should give us 
-  // the isbn 
-  // Remove book from store
+  //// we need to target isbn
+  //// So we get the link it self that we click. then we get parent element which is the <td></td>. 
+  //// then i grap the previousElementSibling. then we want the text content. this should give us the isbn 
   Store.removeBook(e.target.parentElement.previousElementSibling.textContent);
 
   // Show success message when book is added
