@@ -99,3 +99,9 @@ a.delete-btn {
   background-color: #f44336;
   color: white;
 }
+
+.alert-success {
+  padding: 20px;
+  background-color: #4CAF50;
+  color: white;
+}

@@ -14,22 +14,21 @@ class Book {
 // UI Class: Handle UI Tasks
 class UI {
   static displayBooks() {
-    const StoragedBooks = [
-      {
-        title: 'Book One',
-        author: 'John Doe',
-        isbn: '3434434'
-      },
-      {
-        title: 'Book Two',
-        author: 'John Doe',
-        isbn: '45545'
-      } 
-    ];
+    const books = Store.getBooks();
 
-    const books = StoragedBooks;
-
-    books.forEach((book) => UI.addBookToList(book));
+    books.forEach((book) => UI.addBookToList(book));  
+    //// const StoragedBooks = [
+    ////   {
+    ////     title: 'Book One',
+    ////     author: 'John Doe',
+    ////     isbn: '3434434'
+    ////   },
+    ////   {
+    ////     title: 'Book Two',
+    ////     author: 'John Doe',
+    ////     isbn: '45545'
+    ////   } 
+    //// ];
   }
 
   static addBookToList(book) {
@@ -52,37 +51,70 @@ class UI {
     if (el.classList.contains('delete-btn')) {
       el.parentElement.parentElement.remove();
     }
-  }
-  // NOT WORKING
+    return 'This is static delete book';
+  } 
   
-  //I think there is something wrong with the static showAlert.
   //// How this should be formatted. <div class="alert alert-success">what ever the message is</div>
   static showAlert(message, className) {
-    // So we create new div
     const div = document.createElement('div'); //console.log(div); 
-
     // Then we give that div a class name
     div.className = `alert-${className}`;
     // Then we add the text
     div.appendChild(document.createTextNode(message));
-    
     const container = document.getElementById('container'); //console.log(container);
-    // then we get the form element
     const form = document.getElementById('book-form'); //console.log(form);
-    // then we insert the alert in there
     container.insertBefore(div, form)
+    
+    // Vanish in 3 sec
+    ////setTimeout(() => document.querySelector('.alert-danger').remove(), 3000);
+    setTimeout(() => document.querySelector('.alert-success').remove(), 3000);
 
     return 'static method has been called.'; 
   }
+
   static clearFields() {
     document.querySelector('#title').value = '';
     document.querySelector('#author').value = '';
     document.querySelector('#isbn').value = ''; 
   }
 
-} console.log(UI.showAlert());
+} //console.log(UI.showAlert());
+console.log(deleteBook(el));
 
 // Store Class: Handles Storage
+
+//We need 3 differant methods and we make them static so we can call them directly
+class Store {
+
+  static getBooks() {
+    let books;
+    if(localStorage.getItem('books') === null){
+      books = [];
+    }else
+    books = JSON.parse(localStorage.getItem('books'));
+
+    return books;
+  }
+
+  static addBook(book) {
+    const books = Store.getBooks();
+    books.push(book);
+    localStorage.setItem('books', JSON.stringify(books));
+  }
+
+  static removeBook(isbn) {
+    const books = Store.getBooks();
+    
+    books.forEach((book, index) => {
+      if(book.isbn === isbn) {
+        books.splice(index, 1);
+      }
+    });
+
+    localStorage.setItem('books', JSON.stringify(books));
+  }
+}
+
 
 // Event: Display Books
 document.addEventListener('DOMContentLoaded', UI.displayBooks); 
@@ -99,7 +131,6 @@ document.querySelector('#book-form').addEventListener('submit', (e) => {
 
   // Validate
   if(title === '' || author === '' || isbn === ''){
-    //alert('Please fill in all fields');
     UI.showAlert('Please fill in all fields', 'danger');
   } else {
     // Instatiate book
@@ -108,6 +139,12 @@ document.querySelector('#book-form').addEventListener('submit', (e) => {
     // Add Book to UI
     UI.addBookToList(book);
 
+    // Add Book to store
+    Store.addBook(book);
+
+    // Show success message when book is added
+    UI.showAlert('Book added', 'success');
+
     // Clear fields
     UI.clearFields();
   }
@@ -115,5 +152,19 @@ document.querySelector('#book-form').addEventListener('submit', (e) => {
 
 // Event: Remove a Book.
 document.querySelector('#book-list').addEventListener('click', (e) => {
-  UI.deleteBook(e.target)
-}); 
+  // Remove Book from UI
+  UI.deleteBook(e.target);
+
+  // when i refrash the page i want the book to not be there
+  // The remove book takes in the isbn.
+  // So we get the link it self that we click. then we navgatte to the parent element which is the <td></td>. then we 
+  // want to go inside of the and grap the previousElementSibling. then we want the text content. this should give us 
+  // the isbn 
+  // Remove book from store
+  Store.removeBook(e.target.parentElement.previousElementSibling.textContent);
+
+  // Show success message when book is added
+  UI.showAlert('Book Removed', 'success');
+});
+
+
