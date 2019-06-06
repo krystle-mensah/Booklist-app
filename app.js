@@ -22,7 +22,7 @@ class UI {
     row.innerHTML = `
       <td>${book.title}</td>
       <td>${book.author}</td>
-      <td>${book.isbn}</td>
+      <td class="isbn-data">${book.isbn}</td>
       <td><a href="#" class="delete-btn">X</a></td>
     `;
     list.appendChild(row);
@@ -87,11 +87,9 @@ class Store {
 
 
 // EVENTS: Display Books
-
 document.addEventListener('DOMContentLoaded', UI.displayBooks); 
 
 // Event: Add a Book
-
 document.querySelector('#book-form').addEventListener('submit', (e) => {
   e.preventDefault();
 
@@ -105,7 +103,7 @@ document.querySelector('#book-form').addEventListener('submit', (e) => {
     UI.showAlert('Please fill in all fields', 'danger');
   } else {
     // Instatiate Book
-    const book = new Book(title, author, isbn); //console.log(book);
+    const book = new Book(title, author, isbn);
   
     // Add Book to UI
     UI.addBookToList(book);
@@ -122,14 +120,13 @@ document.querySelector('#book-form').addEventListener('submit', (e) => {
 });
 
 // Event: Remove a Book
-
 document.querySelector('#book-list').addEventListener('click', (e) => {
   
   // Remove Book from UI
   UI.deleteBook(e.target);
 
   // Remove book from store
-  Store.removeBook(e.target.parentElement.previousElementSibling.textContent);
+  Store.removeBook(e.target.parentElement.parentElement.querySelector('.isbn-data').textContent);
 
   // Show success message when book is added
   UI.showAlert('Book Removed', 'success');
